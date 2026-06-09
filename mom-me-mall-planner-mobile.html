@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mom and Me Mall Planner</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4efe6;
+      --bg-2: #ebf3f1;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-solid: #ffffff;
+      --text: #1d2731;
+      --muted: #5f6d79;
+      --line: rgba(29, 39, 49, 0.12);
+      --accent: #1e6f5c;
+      --accent-2: #f0a63a;
+      --accent-3: #cf5b43;
+      --good: #2f7d46;
+      --warn: #b06118;
+      --shadow: 0 12px 30px rgba(21, 32, 43, 0.12);
+      --radius: 24px;
+      --radius-lg: 30px;
+      --tap: 48px;
+      --content-width: 760px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(30, 111, 92, 0.16), transparent 30%),
+        radial-gradient(circle at top right, rgba(240, 166, 58, 0.16), transparent 28%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px);
+      background-size: 44px 44px;
+      opacity: 0.3;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.72), transparent 92%);
+    }
+
+    .shell {
+      width: min(100%, var(--content-width));
+      margin: 0 auto;
+      padding: 16px 14px 28px;
+      padding-bottom: calc(28px + env(safe-area-inset-bottom));
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      border-radius: 32px;
+      padding: 20px 18px 18px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(30, 111, 92, 0.98), rgba(20, 63, 78, 0.96)),
+        linear-gradient(135deg, #1e6f5c, #203f4e);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -20px -42px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 68%);
+    }
+
+    .eyebrow {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.82;
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.9rem, 7vw, 2.8rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy {
+      margin: 10px 0 0;
+      font-size: 1rem;
+      line-height: 1.45;
+      max-width: 34rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      font-size: 0.82rem;
+      border: 1px solid rgba(255,255,255,0.14);
+      white-space: nowrap;
+    }
+
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .card-inner {
+      padding: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 1.04rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      margin: -2px 0 14px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .summary-tile {
+      border-radius: 20px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(29,39,49,0.08);
+      padding: 14px;
+      min-height: 92px;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .summary-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .summary-note {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .action-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 14px;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .btn {
+      min-height: var(--tap);
+      border: 0;
+      border-radius: 18px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.10);
+      color: var(--text);
+      background: #fff;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-2), #d9782f);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #fff, #f3f6f8);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(29,39,49,0.12);
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      color: #fff;
+      background: linear-gradient(135deg, #cf5b43, #a64131);
+    }
+
+    .btn-small {
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      box-shadow: none;
+    }
+
+    .result {
+      display: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.88));
+    }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .result-title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    .result-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid rgba(29,39,49,0.12);
+      background: rgba(255,255,255,0.75);
+      white-space: nowrap;
+    }
+
+    .result-pill.good {
+      color: var(--good);
+    }
+
+    .result-pill.warn {
+      color: var(--warn);
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .result-block {
+      border-radius: 22px;
+      padding: 16px;
+      background: rgba(246, 248, 250, 0.96);
+      border: 1px solid rgba(29,39,49,0.08);
+    }
+
+    .result-block-title {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .big-number {
+      font-size: 1.95rem;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      margin: 0;
+      line-height: 1;
+    }
+
+    .detail-lines {
+      display: grid;
+      gap: 8px;
+    }
+
+    .detail-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      font-size: 0.96rem;
+      line-height: 1.35;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(29,39,49,0.08);
+    }
+
+    .detail-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .detail-line span:last-child {
+      text-align: right;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .plan-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .plan-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(29,39,49,0.08);
+      line-height: 1.4;
+    }
+
+    .plan-item strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      margin-top: 6px;
+      flex: 0 0 auto;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(30,111,92,0.10);
+    }
+
+    .dot.alt {
+      background: var(--accent-2);
+      box-shadow: 0 0 0 5px rgba(240,166,58,0.12);
+    }
+
+    .dot.warn {
+      background: var(--accent-3);
+      box-shadow: 0 0 0 5px rgba(207,91,67,0.12);
+    }
+
+    .meter {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(29,39,49,0.09);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .meter > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #5cb3a1);
+    }
+
+    .panel-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .edit-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: var(--tap);
+      border-radius: 16px;
+      border: 1px solid rgba(29,39,49,0.12);
+      background: rgba(255,255,255,0.9);
+      padding: 10px 12px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: rgba(30,111,92,0.45);
+      box-shadow: 0 0 0 4px rgba(30,111,92,0.10);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .list-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(29,39,49,0.08);
+    }
+
+    .row-main {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row-main input[type="text"] {
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid rgba(29,39,49,0.12);
+      padding: 10px 12px;
+      background: #fff;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .row-actions {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }
+
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 0 10px;
+      border-radius: 12px;
+      background: rgba(30,111,92,0.08);
+      color: var(--accent);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .switch input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+    }
+
+    .inline-actions {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-bar {
+      position: sticky;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      z-index: 2;
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.84);
+      border: 1px solid rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+    }
+
+    .muted-link {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 0;
+      min-height: var(--tap);
+      text-align: left;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .small-print {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.4;
+      margin-top: 10px;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(29,39,49,0.10);
+      margin: 16px 0;
+    }
+
+    .history {
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(29,39,49,0.08);
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+
+    .history-item span:last-child {
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 540px) {
+      .shell {
+        padding-inline: 12px;
+      }
+
+      .hero {
+        padding: 18px 16px 16px;
+        border-radius: 28px;
+      }
+
+      .card-inner {
+        padding: 16px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-row,
+      .inline-actions,
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-head {
+        flex-direction: column;
+      }
+
+      .list-row {
+        grid-template-columns: 1fr;
+      }
+
+      .row-actions {
+        grid-template-columns: 1fr 1fr;
+        justify-items: stretch;
+      }
+
+      .footer-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        min-height: 50px;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .card,
+      .hero,
+      .footer-bar {
+        animation: rise 420ms ease both;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">Mobile first daily planner</p>
+      <h1>Mom and Me Mall Planner</h1>
+      <p class="hero-copy">
+        A cleaner daily planner for the mall run: large text, one-tap planning, rotation memory,
+        and offline storage in your browser.
+      </p>
+      <div class="hero-badges" id="heroBadges"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <h2 class="section-title">Today at a glance</h2>
+        <p class="section-subtitle">This is the fast-read view for phone use. The app keeps the important parts first.</p>
+        <div class="summary-grid" id="summaryGrid"></div>
+        <div class="action-row">
+          <button class="btn btn-primary" id="planBtn">Plan today</button>
+          <button class="btn btn-secondary" id="shuffleBtn">Shuffle again</button>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-ghost" id="markRecentBtn">Mark selected mall as recent</button>
+          <button class="btn btn-danger" id="resetBtn">Reset defaults</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card result" id="resultCard">
+      <div class="card-inner">
+        <div class="result-head">
+          <div>
+            <p class="section-title" style="margin-bottom: 6px;">Generated plan</p>
+            <h2 class="result-title" id="resultMall">No plan yet</h2>
+          </div>
+          <div class="result-pill good" id="budgetPill">Ready to plan</div>
+        </div>
+        <div class="result-grid">
+          <div class="result-block">
+            <p class="result-block-title">Plan summary</p>
+            <div class="plan-list" id="planList"></div>
+          </div>
+          <div class="result-block">
+            <p class="result-block-title">Budget</p>
+            <p class="big-number" id="foodTotal">RM 0</p>
+            <p class="note" id="foodNote"></p>
+            <div class="meter" aria-hidden="true"><span id="budgetMeter" style="width: 0%"></span></div>
+          </div>
+          <div class="result-block">
+            <p class="result-block-title">Travel and timing</p>
+            <div class="detail-lines" id="travelLines"></div>
+          </div>
+          <div class="result-block">
+            <p class="result-block-title">Reminders</p>
+            <div class="plan-list" id="reminderList"></div>
+          </div>
+          <div class="result-block">
+            <p class="result-block-title">Recent picks</p>
+            <div class="history" id="historyList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <h2 class="section-title">Daily settings</h2>
+        <p class="section-subtitle">Edit these once, then use the planner every day without re-entering the basics.</p>
+        <div class="field-grid">
+          <div class="field">
+            <label for="foodBudget">Food budget for two (RM)</label>
+            <input id="foodBudget" type="number" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="lrtCost">LRT round trip estimate (RM)</label>
+            <input id="lrtCost" type="number" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="grabCost">Grab back estimate (RM)</label>
+            <input id="grabCost" type="number" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="leaveTime">Leave home by</label>
+            <input id="leaveTime" type="time">
+          </div>
+        </div>
+        <div class="small-print">
+          Keeps the original idea: mall visits stay on your phone, recent malls get lower priority,
+          and the last mall is less likely to repeat immediately.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <div class="result-head" style="margin-bottom: 10px;">
+          <div>
+            <h2 class="section-title" style="margin-bottom: 6px;">Mall list</h2>
+            <p class="section-subtitle" style="margin-bottom: 0;">Edit names, tick recent visits, or add new places.</p>
+          </div>
+          <button class="btn btn-small btn-ghost" id="addMallBtn">Add mall</button>
+        </div>
+        <div class="list" id="mallList"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <div class="result-head" style="margin-bottom: 10px;">
+          <div>
+            <h2 class="section-title" style="margin-bottom: 6px;">Breakfast choices</h2>
+            <p class="section-subtitle" style="margin-bottom: 0;">These are the options the plan can rotate through.</p>
+          </div>
+          <button class="btn btn-small btn-ghost" id="addBreakfastBtn">Add breakfast</button>
+        </div>
+        <div class="list" id="breakfastList"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <h2 class="section-title">How it works</h2>
+        <div class="plan-list">
+          <div class="plan-item">
+            <div class="dot"></div>
+            <div>
+              <strong>Mobile readability first</strong>
+              Big type, short cards, and large tap targets make it easy to read on the go.
+            </div>
+          </div>
+          <div class="plan-item">
+            <div class="dot alt"></div>
+            <div>
+              <strong>Rotation memory</strong>
+              Recently visited malls are still possible, but they are less likely to appear again.
+            </div>
+          </div>
+          <div class="plan-item">
+            <div class="dot warn"></div>
+            <div>
+              <strong>Offline by default</strong>
+              Everything is saved in localStorage. No backend, no login, and no internet needed after load.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-bar">
+      <button class="btn btn-primary" id="footerPlanBtn">Plan today</button>
+      <button class="btn btn-secondary" id="footerTopBtn">Back to top</button>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "mom_me_mall_planner_mobile_v1";
+
+    const defaultState = {
+      malls: [
+        { name: "Pavilion Bukit Jalil", recent: true },
+        { name: "Aeon Midvalley", recent: false },
+        { name: "Lalaport", recent: false },
+        { name: "EkoCheras", recent: true },
+        { name: "The Mines", recent: true },
+        { name: "Sri Petaling", recent: false }
+      ],
+      breakfasts: [
+        "mee",
+        "roti canai",
+        "nasi lemak",
+        "dim sum",
+        "diy",
+        "order grab",
+        "no idea"
+      ],
+      settings: {
+        foodBudget: 60,
+        lrtCost: 8,
+        grabCost: 16,
+        leaveTime: "09:15"
+      },
+      lastMall: "",
+      history: [],
+      lastPlan: null
+    };
+
+    const el = {
+      heroBadges: document.getElementById("heroBadges"),
+      summaryGrid: document.getElementById("summaryGrid"),
+      resultCard: document.getElementById("resultCard"),
+      resultMall: document.getElementById("resultMall"),
+      budgetPill: document.getElementById("budgetPill"),
+      planList: document.getElementById("planList"),
+      foodTotal: document.getElementById("foodTotal"),
+      foodNote: document.getElementById("foodNote"),
+      budgetMeter: document.getElementById("budgetMeter"),
+      travelLines: document.getElementById("travelLines"),
+      reminderList: document.getElementById("reminderList"),
+      historyList: document.getElementById("historyList"),
+      foodBudget: document.getElementById("foodBudget"),
+      lrtCost: document.getElementById("lrtCost"),
+      grabCost: document.getElementById("grabCost"),
+      leaveTime: document.getElementById("leaveTime"),
+      mallList: document.getElementById("mallList"),
+      breakfastList: document.getElementById("breakfastList"),
+      planBtn: document.getElementById("planBtn"),
+      shuffleBtn: document.getElementById("shuffleBtn"),
+      markRecentBtn: document.getElementById("markRecentBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      footerPlanBtn: document.getElementById("footerPlanBtn"),
+      footerTopBtn: document.getElementById("footerTopBtn"),
+      addMallBtn: document.getElementById("addMallBtn"),
+      addBreakfastBtn: document.getElementById("addBreakfastBtn")
+    };
+
+    let state = loadState();
+    let currentPlan = state.lastPlan || null;
+
+    function cloneDefault() {
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return cloneDefault();
+      try {
+        const parsed = JSON.parse(raw);
+        return normalizeState(parsed);
+      } catch {
+        return cloneDefault();
+      }
+    }
+
+    function normalizeState(input) {
+      const base = cloneDefault();
+
+      if (input && typeof input === "object") {
+        if (Array.isArray(input.malls) && input.malls.length) {
+          base.malls = input.malls.map((item) => ({
+            name: String(item?.name ?? "").trim() || "Untitled mall",
+            recent: Boolean(item?.recent)
+          }));
+        }
+
+        if (Array.isArray(input.breakfasts) && input.breakfasts.length) {
+          base.breakfasts = input.breakfasts
+            .map((item) => String(item ?? "").trim())
+            .filter(Boolean);
+        }
+
+        if (input.settings && typeof input.settings === "object") {
+          base.settings.foodBudget = toNumber(input.settings.foodBudget, base.settings.foodBudget);
+          base.settings.lrtCost = toNumber(input.settings.lrtCost, base.settings.lrtCost);
+          base.settings.grabCost = toNumber(input.settings.grabCost, base.settings.grabCost);
+          base.settings.leaveTime = normalizeTime(input.settings.leaveTime) || base.settings.leaveTime;
+        }
+
+        base.lastMall = typeof input.lastMall === "string" ? input.lastMall : "";
+        if (Array.isArray(input.history)) {
+          base.history = input.history
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+              mall: String(item.mall ?? ""),
+              breakfast: String(item.breakfast ?? ""),
+              total: toNumber(item.total, 0)
+            }))
+            .slice(0, 5);
+        }
+
+        if (input.lastPlan && typeof input.lastPlan === "object") {
+          base.lastPlan = normalizePlan(input.lastPlan);
+        }
+      }
+
+      if (!base.malls.length) base.malls = cloneDefault().malls;
+      if (!base.breakfasts.length) base.breakfasts = cloneDefault().breakfasts;
+      return base;
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function toNumber(value, fallback) {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : fallback;
+    }
+
+    function normalizeTime(value) {
+      if (typeof value !== "string") return "";
+      const match = value.match(/^(\d{2}):(\d{2})$/);
+      if (!match) return "";
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return "";
+      return value;
+    }
+
+    function formatTimeLabel(timeValue) {
+      if (!timeValue) return "09:15";
+      const [hh, mm] = timeValue.split(":").map(Number);
+      const suffix = hh >= 12 ? "PM" : "AM";
+      const hour12 = ((hh + 11) % 12) + 1;
+      return `${hour12}:${String(mm).padStart(2, "0")} ${suffix}`;
+    }
+
+    function saveAndRender() {
+      saveState();
+      renderAll();
+    }
+
+    function renderAll() {
+      renderHeroBadges();
+      renderSummary();
+      renderSettingsFields();
+      renderMalls();
+      renderBreakfasts();
+      renderResult();
+    }
+
+    function renderHeroBadges() {
+      const totalMalls = state.malls.length;
+      const recentCount = state.malls.filter((mall) => mall.recent).length;
+      const lastMall = state.lastMall || "none yet";
+      const badges = [
+        `Malls: ${totalMalls}`,
+        `Recent: ${recentCount}`,
+        `Last: ${lastMall}`,
+        `Food cap: RM ${state.settings.foodBudget}`
+      ];
+      el.heroBadges.innerHTML = badges
+        .map((item) => `<span class="badge">${escapeHtml(item)}</span>`)
+        .join("");
+    }
+
+    function renderSummary() {
+      const summaryItems = [
+        {
+          label: "Selected mall",
+          value: currentPlan?.mall || state.lastMall || "Tap Plan today",
+          note: currentPlan ? "Rotation and recent flags already applied." : "Will pick from the current mall list."
+        },
+        {
+          label: "Breakfast",
+          value: currentPlan?.breakfast || pickBreakfastPreview(),
+          note: "Easy to edit in the breakfast list below."
+        },
+        {
+          label: "Leave home",
+          value: formatTimeLabel(state.settings.leaveTime),
+          note: "Built for a morning start and mall opening time."
+        },
+        {
+          label: "Food budget",
+          value: `RM ${state.settings.foodBudget}`,
+          note: "Warns when the estimated food total goes over."
+        }
+      ];
+
+      el.summaryGrid.innerHTML = summaryItems.map((item) => `
+        <div class="summary-tile">
+          <div class="summary-label">${escapeHtml(item.label)}</div>
+          <div class="summary-value">${escapeHtml(item.value)}</div>
+          <div class="summary-note">${escapeHtml(item.note)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSettingsFields() {
+      el.foodBudget.value = state.settings.foodBudget;
+      el.lrtCost.value = state.settings.lrtCost;
+      el.grabCost.value = state.settings.grabCost;
+      el.leaveTime.value = state.settings.leaveTime;
+    }
+
+    function renderMalls() {
+      el.mallList.innerHTML = state.malls.map((mall, index) => {
+        return `
+          <div class="list-row">
+            <div class="row-main">
+              <input
+                type="text"
+                value="${escapeAttr(mall.name)}"
+                aria-label="Mall name ${index + 1}"
+                data-action="mall-name"
+                data-index="${index}"
+              >
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  ${mall.recent ? "checked" : ""}
+                  data-action="mall-recent"
+                  data-index="${index}"
+                >
+                Visited recently
+              </label>
+            </div>
+            <div class="row-actions">
+              <button class="btn btn-small btn-ghost" data-action="mall-up" data-index="${index}" ${index === 0 ? "disabled" : ""}>Up</button>
+              <button class="btn btn-small btn-ghost" data-action="mall-down" data-index="${index}" ${index === state.malls.length - 1 ? "disabled" : ""}>Down</button>
+              <button class="btn btn-small btn-danger" data-action="mall-remove" data-index="${index}">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderBreakfasts() {
+      el.breakfastList.innerHTML = state.breakfasts.map((item, index) => {
+        return `
+          <div class="list-row">
+            <div class="row-main">
+              <input
+                type="text"
+                value="${escapeAttr(item)}"
+                aria-label="Breakfast choice ${index + 1}"
+                data-action="breakfast-name"
+                data-index="${index}"
+              >
+            </div>
+            <div class="row-actions">
+              <button class="btn btn-small btn-danger" data-action="breakfast-remove" data-index="${index}">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderResult() {
+      if (!currentPlan) {
+        el.resultCard.style.display = "none";
+        return;
+      }
+
+      el.resultCard.style.display = "block";
+      el.resultMall.textContent = currentPlan.mall;
+      el.budgetPill.textContent = currentPlan.withinBudget ? "Within food budget" : "Over food budget";
+      el.budgetPill.className = `result-pill ${currentPlan.withinBudget ? "good" : "warn"}`;
+
+      el.planList.innerHTML = [
+        {
+          title: "Mall",
+          body: currentPlan.mall
+        },
+        {
+          title: "Breakfast",
+          body: `${currentPlan.breakfast} (${currentPlan.breakfastCost} RM)`
+        },
+        {
+          title: "Lunch or snack",
+          body: `${currentPlan.lunchLabel} (${currentPlan.lunchCost} RM)`
+        },
+        {
+          title: "Expected food total",
+          body: `${currentPlan.foodTotal} RM`
+        },
+        {
+          title: "All-in total",
+          body: `${currentPlan.totalSpend} RM`
+        }
+      ].map((item) => `
+        <div class="plan-item">
+          <div class="dot"></div>
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            ${escapeHtml(item.body)}
+          </div>
+        </div>
+      `).join("");
+
+      const meterMax = Math.max(1, state.settings.foodBudget);
+      const meterValue = Math.min(100, Math.round((currentPlan.foodTotal / meterMax) * 100));
+      el.foodTotal.textContent = `RM ${currentPlan.foodTotal}`;
+      el.foodNote.textContent = currentPlan.withinBudget
+        ? `Estimated food stays within your RM ${state.settings.foodBudget} cap for two.`
+        : `Estimated food is RM ${currentPlan.foodTotal - state.settings.foodBudget} over the RM ${state.settings.foodBudget} cap.`
+      el.budgetMeter.style.width = `${meterValue}%`;
+      el.budgetMeter.style.background = currentPlan.withinBudget
+        ? "linear-gradient(90deg, var(--accent), #5cb3a1)"
+        : "linear-gradient(90deg, var(--accent-3), #f08a6b)";
+
+      el.travelLines.innerHTML = [
+        ["Leave home", formatTimeLabel(state.settings.leaveTime)],
+        ["Mall opens", "10:00 AM"],
+        ["Walk + LRT", `${state.settings.lrtCost} RM`],
+        ["Grab back", `${state.settings.grabCost} RM`],
+        ["Total travel", `${currentPlan.travelTotal} RM`]
+      ].map(([label, value]) => `
+        <div class="detail-line">
+          <span>${escapeHtml(label)}</span>
+          <span>${escapeHtml(String(value))}</span>
+        </div>
+      `).join("");
+
+      el.reminderList.innerHTML = currentPlan.reminders.map((item) => `
+        <div class="plan-item">
+          <div class="dot alt"></div>
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            ${escapeHtml(item.body)}
+          </div>
+        </div>
+      `).join("");
+
+      el.historyList.innerHTML = state.history.length
+        ? state.history.map((item) => `
+            <div class="history-item">
+              <span>${escapeHtml(item.mall || "Unknown")}</span>
+              <span>RM ${escapeHtml(String(item.total || 0))}</span>
+            </div>
+          `).join("")
+        : `<div class="note">No generated plans yet. Tap Plan today to create the first one.</div>`;
+    }
+
+    function pickBreakfastPreview() {
+      return state.breakfasts.length ? state.breakfasts[0] : "roti canai";
+    }
+
+    function weightedMallChoice() {
+      const lastMall = state.lastMall || "";
+      const weights = state.malls.map((mall) => {
+        let weight = 1;
+        if (mall.recent) weight *= 0.35;
+        if (lastMall && mall.name === lastMall) weight *= 0.18;
+        return Math.max(weight, 0.05);
+      });
+
+      const total = weights.reduce((sum, value) => sum + value, 0);
+      let roll = Math.random() * total;
+      for (let i = 0; i < state.malls.length; i++) {
+        roll -= weights[i];
+        if (roll <= 0) return state.malls[i].name;
+      }
+      return state.malls[0]?.name || "Mall";
+    }
+
+    function randomBreakfast() {
+      if (!state.breakfasts.length) return "roti canai";
+      return state.breakfasts[Math.floor(Math.random() * state.breakfasts.length)];
+    }
+
+    function estimateBreakfastCost(text) {
+      const value = String(text).trim().toLowerCase();
+      const map = {
+        "mee": 10,
+        "mee hoon": 10,
+        "roti canai": 8,
+        "nasi lemak": 10,
+        "dim sum": 18,
+        "diy": 12,
+        "order grab": 22,
+        "no idea": 14
+      };
+      if (Object.prototype.hasOwnProperty.call(map, value)) return map[value];
+      if (!value) return 12;
+      if (value.includes("grab")) return 22;
+      if (value.length <= 6) return 10;
+      if (value.length <= 10) return 12;
+      return 14;
+    }
+
+    function randomLunchCost() {
+      return randInt(14, 26);
+    }
+
+    function lunchLabelFromCost(cost) {
+      if (cost <= 16) return "Simple share meal";
+      if (cost <= 20) return "Light lunch";
+      if (cost <= 23) return "Lunch plus drink";
+      return "Lunch plus dessert";
+    }
+
+    function createPlan() {
+      const mall = weightedMallChoice();
+      const breakfast = randomBreakfast();
+      const breakfastCost = estimateBreakfastCost(breakfast);
+      const lunchCost = randomLunchCost();
+      const foodTotal = breakfastCost + lunchCost;
+      const travelTotal = state.settings.lrtCost + state.settings.grabCost;
+      const totalSpend = foodTotal + travelTotal;
+      const withinBudget = foodTotal <= state.settings.foodBudget;
+      const leaveTime = formatTimeLabel(state.settings.leaveTime);
+      const reminderPack = [
+        {
+          title: "TNG eWallet",
+          body: "Check parking, cashback, or any mall promo before leaving."
+        },
+        {
+          title: "ShopeeFood",
+          body: "Keep it ready for breakfast vouchers or pickup deals."
+        },
+        {
+          title: "ShopeePay",
+          body: "Use it for quick scans when a store accepts it."
+        },
+        {
+          title: "Daily carry",
+          body: "Bring water, charger, and a power bank so the day stays easy."
+        }
+      ];
+
+      currentPlan = {
+        mall,
+        breakfast,
+        breakfastCost,
+        lunchCost,
+        lunchLabel: lunchLabelFromCost(lunchCost),
+        foodTotal,
+        travelTotal,
+        totalSpend,
+        withinBudget,
+        reminders: reminderPack
+      };
+
+      state.lastPlan = currentPlan;
+
+      state.lastMall = mall;
+      state.history.unshift({ mall, breakfast, total: totalSpend });
+      state.history = state.history.slice(0, 5);
+      saveAndRender();
+
+      el.resultCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function markSelectedRecent() {
+      if (!currentPlan) {
+        createPlan();
+      }
+      if (!currentPlan) return;
+      const index = state.malls.findIndex((mall) => mall.name === currentPlan.mall);
+      if (index >= 0) {
+        state.malls[index].recent = true;
+        saveAndRender();
+      }
+    }
+
+    function resetDefaults() {
+      state = cloneDefault();
+      currentPlan = null;
+      saveAndRender();
+    }
+
+    function addMall() {
+      state.malls.push({ name: "New mall", recent: false });
+      saveAndRender();
+    }
+
+    function addBreakfast() {
+      state.breakfasts.push("new choice");
+      saveAndRender();
+    }
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/\n/g, " ");
+    }
+
+    function normalizePlan(input) {
+      return {
+        mall: String(input.mall ?? ""),
+        breakfast: String(input.breakfast ?? ""),
+        breakfastCost: toNumber(input.breakfastCost, 0),
+        lunchCost: toNumber(input.lunchCost, 0),
+        lunchLabel: String(input.lunchLabel ?? ""),
+        foodTotal: toNumber(input.foodTotal, 0),
+        travelTotal: toNumber(input.travelTotal, 0),
+        totalSpend: toNumber(input.totalSpend, 0),
+        withinBudget: Boolean(input.withinBudget),
+        reminders: Array.isArray(input.reminders)
+          ? input.reminders
+              .filter((item) => item && typeof item === "object")
+              .map((item) => ({
+                title: String(item.title ?? ""),
+                body: String(item.body ?? "")
+              }))
+          : []
+      };
+    }
+
+    function updateMallName(index, value) {
+      if (!state.malls[index]) return;
+      state.malls[index].name = value.trim() || "Untitled mall";
+      if (currentPlan && currentPlan.mall && state.lastMall === currentPlan.mall) {
+        currentPlan.mall = state.lastMall;
+      }
+      saveAndRender();
+    }
+
+    function updateBreakfast(index, value) {
+      if (!state.breakfasts[index]) return;
+      state.breakfasts[index] = value.trim() || "new choice";
+      saveAndRender();
+    }
+
+    function moveMall(index, direction) {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= state.malls.length) return;
+      const copy = state.malls[index];
+      state.malls[index] = state.malls[nextIndex];
+      state.malls[nextIndex] = copy;
+      saveAndRender();
+    }
+
+    function deleteMall(index) {
+      state.malls.splice(index, 1);
+      if (!state.malls.length) state.malls = cloneDefault().malls;
+      saveAndRender();
+    }
+
+    function deleteBreakfast(index) {
+      state.breakfasts.splice(index, 1);
+      if (!state.breakfasts.length) state.breakfasts = cloneDefault().breakfasts;
+      saveAndRender();
+    }
+
+    function handleFieldChange() {
+      state.settings.foodBudget = Math.max(0, toNumber(el.foodBudget.value, defaultState.settings.foodBudget));
+      state.settings.lrtCost = Math.max(0, toNumber(el.lrtCost.value, defaultState.settings.lrtCost));
+      state.settings.grabCost = Math.max(0, toNumber(el.grabCost.value, defaultState.settings.grabCost));
+      state.settings.leaveTime = normalizeTime(el.leaveTime.value) || defaultState.settings.leaveTime;
+      saveAndRender();
+    }
+
+    function handleListClick(event) {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.dataset.action;
+      if (!action) return;
+      const index = Number(target.dataset.index);
+
+      if (action === "mall-remove") deleteMall(index);
+      if (action === "mall-up") moveMall(index, -1);
+      if (action === "mall-down") moveMall(index, 1);
+      if (action === "breakfast-remove") deleteBreakfast(index);
+    }
+
+    function handleListChange(event) {
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      const action = target.dataset.action;
+      if (!action) return;
+      const index = Number(target.dataset.index);
+
+      if (action === "mall-name") updateMallName(index, target.value);
+      if (action === "breakfast-name") updateBreakfast(index, target.value);
+      if (action === "mall-recent") {
+        if (!state.malls[index]) return;
+        state.malls[index].recent = target.checked;
+        saveState();
+        renderHeroBadges();
+      }
+    }
+
+    function bindEvents() {
+      el.planBtn.addEventListener("click", createPlan);
+      el.footerPlanBtn.addEventListener("click", createPlan);
+      el.shuffleBtn.addEventListener("click", createPlan);
+      el.markRecentBtn.addEventListener("click", markSelectedRecent);
+      el.resetBtn.addEventListener("click", resetDefaults);
+      el.footerTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      el.addMallBtn.addEventListener("click", addMall);
+      el.addBreakfastBtn.addEventListener("click", addBreakfast);
+
+      el.foodBudget.addEventListener("change", handleFieldChange);
+      el.lrtCost.addEventListener("change", handleFieldChange);
+      el.grabCost.addEventListener("change", handleFieldChange);
+      el.leaveTime.addEventListener("change", handleFieldChange);
+
+      el.mallList.addEventListener("click", handleListClick);
+      el.breakfastList.addEventListener("click", handleListClick);
+      el.mallList.addEventListener("change", handleListChange);
+      el.breakfastList.addEventListener("change", handleListChange);
+    }
+
+    bindEvents();
+    renderAll();
+  </script>
+</body>
+</html>
